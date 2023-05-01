@@ -1,0 +1,12 @@
+.pane {
+    -fx-background-color: #667ec7;
+}
+
+/*
+ BUTTON STYLING
+*/
+
+.button {
+    position: relative;
+    color: white;
+}

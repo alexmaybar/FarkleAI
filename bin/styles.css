@@ -1,0 +1,18 @@
+.pane {
+    -fx-background-color: #8fbc8f;
+}
+
+.button {
+  -fx-background-color: #d6d6d6;
+  -fx-background-radius: 4;
+  -fx-padding: 40;
+  -fx-text-fill: rgb(0, 0, 0);
+}
+
+.button:hover {
+  -fx-background-color: #3c3939;
+}
+
+.button:pressed {
+    -fx-background-color: #235891;
+}

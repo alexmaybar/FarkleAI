@@ -2,12 +2,14 @@ package game;
 
 import java.util.Random;
 
+// TODO: Auto-generated Javadoc
 /**
  * The Class Farkle.
  * Holds relevant information for a game of Farkle
  */
 public class Farkle {
 	
+	/** The score to win. */
 	final private int SCORE_TO_WIN = 10000;
 	
 	/** The random number generator. */
@@ -25,11 +27,13 @@ public class Farkle {
 	/** The current turn of the game. */
 	private int turn_count;
 	
-	/** Holds true is a die has been scored this turn **/
+	/**  Holds true is a die has been scored this turn *. */
 	private boolean hasScored;
 	
 	/** The active player. */
 	private Player active_player;
+	
+	private Player winner;
 
 	/** player 1. */
 	private Player player_1;
@@ -90,6 +94,42 @@ public class Farkle {
 	public Player getActive_player() {
 		return active_player;
 	}
+	
+	/**
+	 * Gets the player 1.
+	 *
+	 * @return the player 1
+	 */
+	public Player getPlayer_1() {
+		return player_1;
+	}
+
+	/**
+	 * Sets the player 1.
+	 *
+	 * @param player_1 the new player 1
+	 */
+	public void setPlayer_1(Player player_1) {
+		this.player_1 = player_1;
+	}
+
+	/**
+	 * Gets the player 2.
+	 *
+	 * @return the player 2
+	 */
+	public Player getPlayer_2() {
+		return player_2;
+	}
+
+	/**
+	 * Sets the player 2.
+	 *
+	 * @param player_2 the new player 2
+	 */
+	public void setPlayer_2(Player player_2) {
+		this.player_2 = player_2;
+	}
 
 	/**
 	 * Instantiates a new Farkle game.
@@ -106,6 +146,7 @@ public class Farkle {
 		
 		player_1 = new Player("Player 1");
 		player_2 = new Player("Player 2");
+		winner = null;
 		
 		active_player = player_1;
 		turn_count = 1;

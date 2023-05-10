@@ -2,6 +2,8 @@ package client;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+
+import agent.AIPlayer;
 import game.Farkle;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
@@ -23,35 +25,35 @@ import javafx.stage.Stage;
  * The Class ClientDriver.
  */
 public class ClientDriver extends Application implements EventHandler<ActionEvent> {
-
-	//TODO make these private
 	
 	/** The game. */
-	Farkle game;
+	private Farkle game;
+	
+	private AIPlayer ai;
 
 	/** The root pane. */
-	BorderPane root;
+	private BorderPane root;
 	
 	/** The scene. */
-	Scene scene;
+	private Scene scene;
 
 	/** The title screen. */
-	TitleScreen title;
+	private TitleScreen title;
 	
 	/** The die pane. */
-	DiePane diePane;
+	private DiePane diePane;
 	
 	/** The info pane. */
-	InfoPane infoPane;
+	private InfoPane infoPane;
 
 	/** The scoreboard. */
-	TableView<TurnInfo> scoreboard;
+	private TableView<TurnInfo> scoreboard;
 	
 	/** The data. */
-	ObservableList<TurnInfo> data;
+	private ObservableList<TurnInfo> data;
 
 	/** The start over btn. */
-	Button startOverBtn;
+	private Button startOverBtn;
 
 	/**
 	 * Start.
@@ -60,7 +62,8 @@ public class ClientDriver extends Application implements EventHandler<ActionEven
 	 */
 	@Override
 	public void start(Stage primaryStage) {
-		game = new Farkle();
+		game = new Farkle(); 
+		ai = new AIPlayer();
 		data = FXCollections.observableList(new ArrayList<>());
 
 		root = new BorderPane();
@@ -156,7 +159,6 @@ public class ClientDriver extends Application implements EventHandler<ActionEven
 					data.add(new TurnInfo(Integer.toString(game.getTurn_count()), "FARKLE", ""));
 				}
 				game.passTurn(true);
-				System.out.println("Turn Passed!");
 				diePane.farkle(msg, this);
 			}
 
@@ -179,8 +181,11 @@ public class ClientDriver extends Application implements EventHandler<ActionEven
 						""));
 			}
 			game.passTurn(false);
-			System.out.println("Turn Passed");
-			refresh();
+			if (isAIturn()) {
+				AIturn();
+			} else {
+				refresh();
+			}
 		}
 	}
 
@@ -227,5 +232,37 @@ public class ClientDriver extends Application implements EventHandler<ActionEven
 
 		root.setLeft(null);
 		root.setCenter(gameOverBox);
+	}
+	
+	public boolean isAIturn() {
+		return game.getActive_player() == game.getPlayer_2();
+	}
+	
+	
+	public void AIturn() {
+		System.out.println("AI Turn");
+		int i = 0;
+		do {
+			game.rollDice();
+			System.out.println("Roll Again");
+			if(game.detectFarkle()) {
+				System.out.println("Farkle");
+				game.passTurn(true);
+				refresh();
+				return;
+			} else {
+				boolean[] selection = ai.makeSelection(game);
+				for(boolean b: selection){
+					System.out.println(b);
+				}
+				game.setSelection(selection);
+				System.out.println("Value of Selection: " + game.checkSelectionScore());
+				game.scoreSelection();
+			}
+			i++;
+		} while(i < 2);
+		System.out.println("AI. I decided to be done.");
+		game.passTurn(false);
+		refresh();
 	}
 }

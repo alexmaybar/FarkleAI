@@ -196,9 +196,16 @@ public class DiePane extends VBox{
 		this.getChildren().add(optionsBox);
 		
 		/* Enable/Disable Buttons */
-		passBtn.setDisable(!game.getActive_player().canPass());
-		scoreDieBtn.setDisable(game.checkSelectionScore() <= 0);
-		rollDieBtn.setDisable(!game.canRoll());
+		if(game.getActive_player() == game.getPlayer_1()) {
+			passBtn.setDisable(!game.getActive_player().canPass());
+			scoreDieBtn.setDisable(game.checkSelectionScore() <= 0);
+			rollDieBtn.setDisable(!game.canRoll());
+		} else {
+			passBtn.setDisable(true);
+			scoreDieBtn.setDisable(true);
+			rollDieBtn.setDisable(true);
+		}
+		
 	}
 
 	/**
@@ -215,6 +222,11 @@ public class DiePane extends VBox{
 			@Override
 			public void handle(ActionEvent arg0) {
 				clientDriver.refresh();
+				if (clientDriver.isAIturn()) {
+					clientDriver.AIturn();
+				} else {
+					clientDriver.refresh();
+				}
 			}
 		});
 		Label farkleMsg = new Label(msg);

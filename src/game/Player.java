@@ -1,26 +1,29 @@
 package game;
 
 /**
- * The Class Player.
- * Holds player information.
+ * The Class Player. Holds player information.
+ * \\TODO move some things to farkle
  */
 public class Player {
-	
+
 	/** The score. */
 	private int score;
-	
+
 	/** The current turn score. */
 	private int turnScore;
-	
+
 	/** The number of farkles in a row the player has. */
 	private int farkles;
-	
+
 	/** The name of the player. */
 	private String name;
-	
+
 	/** Is this player a winner. */
 	private boolean winner;
 	
+	/** Has the player scored in this game **/
+	private boolean hasScored;
+
 	/**
 	 * Gets the players current score.
 	 *
@@ -47,7 +50,7 @@ public class Player {
 	public String getName() {
 		return name;
 	}
-	
+
 	/**
 	 * Gets the number of farkles.
 	 *
@@ -56,16 +59,17 @@ public class Player {
 	public int getFarkles() {
 		return farkles;
 	}
-	
+
 	/**
 	 * Sets the value of winner.
+	 * \\TODO maybe move this to farkle.java
 	 *
 	 * @param won the new winner
 	 */
 	public void setWinner(boolean won) {
 		this.winner = won;
 	}
-	
+
 	/**
 	 * Checks if player is winner.
 	 *
@@ -86,8 +90,9 @@ public class Player {
 		this.farkles = 0;
 		this.name = name;
 		this.winner = false;
+		this.hasScored = false;
 	}
-	
+
 	/**
 	 * Increases current turn scores.
 	 *
@@ -96,18 +101,18 @@ public class Player {
 	public void increaseScore(int score) {
 		turnScore += score;
 	}
-	
+
 	/**
 	 * Chech if the Player can pass.
 	 *
 	 * @return true, if successful
 	 */
 	public boolean canPass() {
-		if (score == 0 && turnScore < 500)
+		if ((!hasScored && turnScore < 500) || turnScore == 0)
 			return false;
 		return true;
 	}
-	
+
 	/**
 	 * End the current turn.
 	 */
@@ -115,11 +120,11 @@ public class Player {
 		score += turnScore;
 		turnScore = 0;
 		farkles = 0;
+		hasScored = true;
 	}
-	
+
 	/**
-	 * Farkle.
-	 * Handles what happens when the player farkles.
+	 * Farkle. Handles what happens when the player farkles.
 	 */
 	public void farkle() {
 		farkles++;
@@ -129,7 +134,7 @@ public class Player {
 			farkles = 0;
 		}
 	}
-	
+
 	/**
 	 * To string.
 	 *

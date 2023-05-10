@@ -8,6 +8,8 @@ import java.util.Random;
  */
 public class Farkle {
 	
+	final private int SCORE_TO_WIN = 10000;
+	
 	/** The random number generator. */
 	private Random r;
 
@@ -22,6 +24,9 @@ public class Farkle {
 	
 	/** The current turn of the game. */
 	private int turn_count;
+	
+	/** Holds true is a die has been scored this turn **/
+	private boolean hasScored;
 	
 	/** The active player. */
 	private Player active_player;
@@ -95,12 +100,24 @@ public class Farkle {
 		diePool = new int[6];
 		lockDie = new boolean[6];
 		selection = new boolean[6];
-
+		
+		//starts as true so the first player can roll
+		hasScored = true;
+		
 		player_1 = new Player("Player 1");
 		player_2 = new Player("Player 2");
 		
 		active_player = player_1;
 		turn_count = 1;
+	}
+	
+	/**
+	 * Checks if the last player (player 2) is active.
+	 *
+	 * @return true, if successful
+	 */
+	public boolean endOfRound() {
+		return active_player == player_2;
 	}
 	
 	/**
@@ -126,6 +143,16 @@ public class Farkle {
 		}
 		return false;
 	}
+	
+	/**
+	 * Checks if the current player can roll.
+	 *
+	 * @return true, if successful
+	 */
+	public boolean canRoll() {
+		return hasScored;
+	}
+	
 
 	/**
 	 * Rolls the dice that are not locked.
@@ -145,6 +172,7 @@ public class Farkle {
 				diePool[i] = r.nextInt(6)+1;
 			}
 		}
+		hasScored = false;
 	}
 	
 	/**
@@ -158,7 +186,7 @@ public class Farkle {
 		} else {
 			active_player.endTurn();
 		}
-		if(active_player.getScore() >= 10000) {
+		if(active_player.getScore() >= SCORE_TO_WIN) {
 			active_player.setWinner(true);
 		}
 		if(active_player == player_1) {
@@ -167,8 +195,10 @@ public class Farkle {
 			turn_count++;
 			active_player = player_1;
 		}
+		diePool = new int[6];
 		lockDie = new boolean[6];
 		selection = new boolean[6];
+		hasScored = true;
 	}
 
 	/**
@@ -202,6 +232,7 @@ public class Farkle {
 		score += scoreThreeOfAKind();
 		score += scoreOnes();
 		score += scoreFives();
+		if (score > 0) hasScored = true;
 		active_player.increaseScore(score);
 	}
 	

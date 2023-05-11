@@ -145,21 +145,7 @@ public class ClientDriver extends Application implements EventHandler<ActionEven
 			if (!game.detectFarkle()) {
 				refresh();
 			} else {
-				// What to do when a player farkles
-				String msg = game.getActive_player().getName() + " has farkled!";
-				if (game.getActive_player().getFarkles() + 1 == 3) {
-					msg += "\nYou Lose 1000 points!";
-				}
-				if (game.endOfRound()) {
-					TurnInfo temp = data.get(data.size() - 1);
-					data.remove(data.size() - 1);
-					temp.setP2("FARKLE");
-					data.add(new TurnInfo(temp.getTurnNumber(), temp.getP1(), temp.getP2()));
-				} else {
-					data.add(new TurnInfo(Integer.toString(game.getTurn_count()), "FARKLE", ""));
-				}
-				game.passTurn(true);
-				diePane.farkle(msg, this);
+				farkle();
 			}
 
 		} else if (evt.getSource() == diePane.getScoreDieBtn()) {
@@ -168,24 +154,46 @@ public class ClientDriver extends Application implements EventHandler<ActionEven
 			diePane.clearSelection();
 			refresh();
 		} else if (evt.getSource() == diePane.getPassBtn()) {
-			// Active Player passes turn
-			if (game.endOfRound()) {
-				TurnInfo temp = data.get(data.size() - 1);
-				data.remove(data.size() - 1);
-				temp.setP2(
-						Integer.toString(game.getActive_player().getScore() + game.getActive_player().getTurnScore()));
-				data.add(new TurnInfo(temp.getTurnNumber(), temp.getP1(), temp.getP2()));
-			} else {
-				data.add(new TurnInfo(Integer.toString(game.getTurn_count()),
-						Integer.toString(game.getActive_player().getScore() + game.getActive_player().getTurnScore()),
-						""));
-			}
-			game.passTurn(false);
-			if (isAIturn()) {
-				AIturn();
-			} else {
-				refresh();
-			}
+			pass();
+		}
+	}
+	
+	public void farkle() {
+		// What to do when a player farkles
+		String msg = game.getActive_player().getName() + " has farkled!";
+		if (game.getActive_player().getFarkles() + 1 == 3) {
+			msg += "\nYou Lose 1000 points!";
+		}
+		if (game.endOfRound()) {
+			TurnInfo temp = data.get(data.size() - 1);
+			data.remove(data.size() - 1);
+			temp.setP2("FARKLE");
+			data.add(new TurnInfo(temp.getTurnNumber(), temp.getP1(), temp.getP2()));
+		} else {
+			data.add(new TurnInfo(Integer.toString(game.getTurn_count()), "FARKLE", ""));
+		}
+		game.passTurn(true);
+		diePane.farkle(msg, this);
+	}
+	
+	public void pass() {
+		// Active Player passes turn
+		if (game.endOfRound()) {
+			TurnInfo temp = data.get(data.size() - 1);
+			data.remove(data.size() - 1);
+			temp.setP2(
+					Integer.toString(game.getActive_player().getScore() + game.getActive_player().getTurnScore()));
+			data.add(new TurnInfo(temp.getTurnNumber(), temp.getP1(), temp.getP2()));
+		} else {
+			data.add(new TurnInfo(Integer.toString(game.getTurn_count()),
+					Integer.toString(game.getActive_player().getScore() + game.getActive_player().getTurnScore()),
+					""));
+		}
+		game.passTurn(false);
+		if (isAIturn()) {
+			AIturn();
+		} else {
+			refresh();
 		}
 	}
 
@@ -210,7 +218,7 @@ public class ClientDriver extends Application implements EventHandler<ActionEven
 			infoPane.updateInfo(game);
 		}
 	}
-
+	
 	/**
 	 * Game over screen.
 	 */
@@ -240,15 +248,15 @@ public class ClientDriver extends Application implements EventHandler<ActionEven
 	
 	
 	public void AIturn() {
-		System.out.println("AI Turn");
-		int i = 0;
+		System.out.println("\n");
+		System.out.println("AI Turn: " + game.getTurn_count());
+		System.out.println("Active Player: " + game.getActive_player().getName());
 		do {
 			game.rollDice();
 			System.out.println("Roll Again");
 			if(game.detectFarkle()) {
-				System.out.println("Farkle");
-				game.passTurn(true);
-				refresh();
+				System.out.println("Ah shoot I Farkled!");
+				farkle();
 				return;
 			} else {
 				boolean[] selection = ai.makeSelection(game);
@@ -258,11 +266,10 @@ public class ClientDriver extends Application implements EventHandler<ActionEven
 				game.setSelection(selection);
 				System.out.println("Value of Selection: " + game.checkSelectionScore());
 				game.scoreSelection();
+				System.out.println("AI score: " + game.getPlayer_2().getTurnScore());
 			}
-			i++;
-		} while(i < 2);
+		} while(!game.getActive_player().canPass()||ai.rollAgain(game));
 		System.out.println("AI. I decided to be done.");
-		game.passTurn(false);
-		refresh();
+		pass();
 	}
 }

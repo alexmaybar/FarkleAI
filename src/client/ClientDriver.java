@@ -1,11 +1,7 @@
 package client;
 
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.TimeUnit;
 
 import agent.AIPlayer;
 import game.Farkle;
@@ -23,7 +19,6 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -36,6 +31,7 @@ public class ClientDriver extends Application implements EventHandler<ActionEven
 	/** The game. */
 	private Farkle game;
 
+	/** The ai. */
 	private AIPlayer ai;
 
 	/** The root pane. */
@@ -169,6 +165,9 @@ public class ClientDriver extends Application implements EventHandler<ActionEven
 		}
 	}
 
+	/**
+	 * Farkle.Handles UI elements and game state when a player farkles.
+	 */
 	public void farkle() {
 		// What to do when a player farkles
 		String msg = game.getActive_player().getName() + " has farkled!";
@@ -188,6 +187,9 @@ public class ClientDriver extends Application implements EventHandler<ActionEven
 		diePane.farkle(msg, this);
 	}
 
+	/**
+	 * Pass. Handles UI elements and game state when a player farkles.
+	 */
 	public void pass() {
 		if (isAIturn()) {
 			System.out.println("AI: TURN SCORE = " + game.getPlayer_2().getTurnScore());
@@ -214,10 +216,8 @@ public class ClientDriver extends Application implements EventHandler<ActionEven
 
 	/**
 	 * Refresh the UI and alert the game of a selection change.
-	 *
-	 * @param i the i
 	 */
-	public void selectionRefresh(int i) {
+	public void selectionRefresh() {
 		game.setSelection(diePane.getSelection().clone());
 		refresh();
 	}
@@ -257,18 +257,30 @@ public class ClientDriver extends Application implements EventHandler<ActionEven
 		root.setCenter(gameOverBox);
 	}
 
+	/**
+	 * Checks if is AI player's turn.
+	 *
+	 * @return true, if is a AI player's turn
+	 */
 	public boolean isAIturn() {
 		return game.getActive_player() == game.getPlayer_2();
 	}
 
+	/**
+	 * Front facing method to being AI player turn
+	 */
 	public void AIturn() {
 		infoPane.getResetButton().setDisable(true);
 		System.out.println("AI TURN #" + game.getTurn_count());
 		AIturnR();
 	}
 
+	/** The # of rolls for the AI player in the current turn. Used for console logs */
 	private int aiRolls = 0;
 
+	/**
+	 * Recursive private method for AI player turn loop.
+	 */
 	private void AIturnR() {
 		if (!game.gameOver() && ai.rollAgain(game)) {
 			game.rollDice();

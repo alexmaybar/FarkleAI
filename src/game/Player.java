@@ -2,7 +2,6 @@ package game;
 
 /**
  * The Class Player. Holds player information.
- * \\TODO move some things to farkle
  */
 public class Player {
 
@@ -70,7 +69,6 @@ public class Player {
 
 	/**
 	 * Sets the value of winner.
-	 * \\TODO maybe move this to farkle.java
 	 *
 	 * @param won the new winner
 	 */

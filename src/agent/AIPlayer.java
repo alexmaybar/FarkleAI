@@ -1,6 +1,5 @@
 package agent;
 
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -10,10 +9,6 @@ import game.Farkle;
  * The Class AIPlayer.
  */
 public class AIPlayer {
-
-	/** The lt. */
-	LocalTime lt = LocalTime.now();
-
 	/**
 	 * Instantiates a new AI player.
 	 */
@@ -42,7 +37,7 @@ public class AIPlayer {
 	}
 
 	/**
-	 * Make selection.
+	 * Make selection based on game state.
 	 *
 	 * @param game the game
 	 * @return the boolean[]
@@ -83,10 +78,10 @@ public class AIPlayer {
 	}
 
 	/**
-	 * Gets the bool arr.
+	 * Gets all possible boolean arrays of length.
 	 *
 	 * @param length the length
-	 * @return the bool arr
+	 * @return the bool arrays
 	 */
 	private ArrayList<boolean[]> getBoolArr(int length) {
 		int numOptions = 1 << length;
@@ -105,8 +100,8 @@ public class AIPlayer {
 	/**
 	 * Chance to score.
 	 *
-	 * @param n the n
-	 * @return the double
+	 * @param n the number of dice
+	 * @return the chance of scoring
 	 */
 	private double chanceToScore(int n) {
 		switch (n) {
@@ -130,10 +125,10 @@ public class AIPlayer {
 	}
 
 	/**
-	 * Max potential.
+	 * Max potential of next roll.
 	 *
-	 * @param n the n
-	 * @return the double
+	 * @param n the number of dice to roll
+	 * @return the potential
 	 */
 	private double maxPotential(int n) {
 		switch (n) {
@@ -157,7 +152,7 @@ public class AIPlayer {
 	}
 
 	/**
-	 * Roll again.
+	 * Roll again. Determine if rolling again is beneficial based on the state of the game.
 	 *
 	 * @param game the game
 	 * @return true, if successful
@@ -197,10 +192,10 @@ public class AIPlayer {
 	}
 
 	/**
-	 * Risk factor.
+	 * Risk factor calculated from difference in scores.
 	 *
 	 * @param game the game
-	 * @return the double
+	 * @return the risk factor
 	 */
 	public double riskFactor(Farkle game) {
 		int difference = game.getPlayer_1().getScore()

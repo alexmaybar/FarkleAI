@@ -182,7 +182,7 @@ public class DiePane extends VBox{
 										selection[i] = false;
 										dieImgs[i].setId("");
 									}
-									client.selectionRefresh(i);
+									client.selectionRefresh();
 								}
 							}
 						}

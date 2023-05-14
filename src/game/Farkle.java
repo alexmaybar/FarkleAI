@@ -2,7 +2,6 @@ package game;
 
 import java.util.Random;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class Farkle.
  * Holds relevant information for a game of Farkle
@@ -474,12 +473,15 @@ public class Farkle {
 	private int scoreThreeOfAKind() {
 		int score = 0;
 		int[] numOfNums = getNumOfNumsScore();
+		int numThrees = 0;
 		for(int i = 0; i < numOfNums.length; i++){
 			if(numOfNums[i] >= 3){
 				if(i == 0) {
 					score += 300;
+					numThrees++;
 				} else  {
 					score += (i + 1) * 100; //add 100 times dice value for other 3 of a kinds
+					numThrees++;
 				}
 				int numUsed = 0;
 				for(int j = 0; j < diePool.length; j++){
@@ -491,6 +493,8 @@ public class Farkle {
 				}
 			}
 		}
+		if(numThrees == 2) 
+			return 2500;
 		return score;
 	}
 

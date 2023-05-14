@@ -27,8 +27,14 @@ public class InfoPane extends VBox {
 	/** The cur selection score lbl. */
 	private Label curSelectionScoreLbl;
 
+	/** The reset button. */
 	private Button resetButton;
 	
+	/**
+	 * Gets the reset button.
+	 *
+	 * @return the reset button
+	 */
 	public Button getResetButton() {
 		return resetButton;
 	}
@@ -37,6 +43,7 @@ public class InfoPane extends VBox {
 	 * Instantiates a new info pane.
 	 *
 	 * @param game the game
+	 * @param handler the handler
 	 */
 	public InfoPane(Farkle game, EventHandler<ActionEvent> handler) {
 		this.getStyleClass().add("pane");

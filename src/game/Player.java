@@ -60,6 +60,14 @@ public class Player {
 		return farkles;
 	}
 
+	public boolean isHasScored() {
+		return hasScored;
+	}
+
+	public void setHasScored(boolean hasScored) {
+		this.hasScored = hasScored;
+	}
+
 	/**
 	 * Sets the value of winner.
 	 * \\TODO maybe move this to farkle.java

@@ -1,10 +1,15 @@
 package client;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 
 import agent.AIPlayer;
 import game.Farkle;
+import javafx.animation.PauseTransition;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -18,37 +23,39 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 /**
  * The Class ClientDriver.
  */
 public class ClientDriver extends Application implements EventHandler<ActionEvent> {
-	
+
 	/** The game. */
 	private Farkle game;
-	
+
 	private AIPlayer ai;
 
 	/** The root pane. */
 	private BorderPane root;
-	
+
 	/** The scene. */
 	private Scene scene;
 
 	/** The title screen. */
 	private TitleScreen title;
-	
+
 	/** The die pane. */
 	private DiePane diePane;
-	
+
 	/** The info pane. */
 	private InfoPane infoPane;
 
 	/** The scoreboard. */
 	private TableView<TurnInfo> scoreboard;
-	
+
 	/** The data. */
 	private ObservableList<TurnInfo> data;
 
@@ -62,15 +69,17 @@ public class ClientDriver extends Application implements EventHandler<ActionEven
 	 */
 	@Override
 	public void start(Stage primaryStage) {
-		game = new Farkle(); 
-		ai = new AIPlayer();
-		data = FXCollections.observableList(new ArrayList<>());
-
 		root = new BorderPane();
 		scene = new Scene(root, 875, 400);
 		scene.getStylesheets().add("styles.css");
 
+		game = new Farkle();
+		ai = new AIPlayer();
+		data = FXCollections.observableList(new ArrayList<>());
+
 		title = new TitleScreen(this);
+		infoPane = new InfoPane(game, this);
+
 		root.setCenter(title);
 
 		scoreboard = new TableView<>();
@@ -82,13 +91,13 @@ public class ClientDriver extends Application implements EventHandler<ActionEven
 		turnCol.setSortable(false);
 		turnCol.setCellValueFactory(new PropertyValueFactory<TurnInfo, String>("turnNumber"));
 		TableColumn<TurnInfo, String> p1Col = new TableColumn<TurnInfo, String>("Player 1");
+		p1Col.setSortable(false);
 		p1Col.setCellValueFactory(new PropertyValueFactory<TurnInfo, String>("p1"));
 		scoreboard.getColumns().setAll(Arrays.asList(turnCol, p1Col));
 		TableColumn<TurnInfo, String> p2Col = new TableColumn<TurnInfo, String>("Player 2");
+		p2Col.setSortable(false);
 		p2Col.setCellValueFactory(new PropertyValueFactory<TurnInfo, String>("p2"));
 		scoreboard.getColumns().setAll(Arrays.asList(turnCol, p1Col, p2Col));
-
-		infoPane = new InfoPane(game);
 
 		primaryStage.setTitle("Farkle GUI");
 		primaryStage.setScene(scene);
@@ -112,10 +121,10 @@ public class ClientDriver extends Application implements EventHandler<ActionEven
 	 */
 	@Override
 	public void handle(ActionEvent evt) {
-		if (evt.getSource() == title.getStartBtn() || evt.getSource() == startOverBtn) {
-			// System.out.println("Start");
+		if (evt.getSource() == title.getStartBtn() || evt.getSource() == startOverBtn || evt.getSource() == infoPane.getResetButton()) {
 			game = new Farkle();
 			data = FXCollections.observableList(new ArrayList<>());
+			ai = new AIPlayer();
 
 			scoreboard = new TableView<>();
 			scoreboard.setEditable(true);
@@ -127,9 +136,11 @@ public class ClientDriver extends Application implements EventHandler<ActionEven
 			turnCol.setCellValueFactory(new PropertyValueFactory<TurnInfo, String>("turnNumber"));
 			TableColumn<TurnInfo, String> p1Col = new TableColumn<TurnInfo, String>("Player 1");
 			p1Col.setCellValueFactory(new PropertyValueFactory<TurnInfo, String>("p1"));
+			p1Col.setSortable(false);
 			scoreboard.getColumns().setAll(Arrays.asList(turnCol, p1Col));
 			TableColumn<TurnInfo, String> p2Col = new TableColumn<TurnInfo, String>("Player 2");
 			p2Col.setCellValueFactory(new PropertyValueFactory<TurnInfo, String>("p2"));
+			p2Col.setSortable(false);
 			scoreboard.getColumns().setAll(Arrays.asList(turnCol, p1Col, p2Col));
 			diePane = new DiePane(this);
 			diePane.updateState(game, this);
@@ -157,7 +168,7 @@ public class ClientDriver extends Application implements EventHandler<ActionEven
 			pass();
 		}
 	}
-	
+
 	public void farkle() {
 		// What to do when a player farkles
 		String msg = game.getActive_player().getName() + " has farkled!";
@@ -173,21 +184,25 @@ public class ClientDriver extends Application implements EventHandler<ActionEven
 			data.add(new TurnInfo(Integer.toString(game.getTurn_count()), "FARKLE", ""));
 		}
 		game.passTurn(true);
+		infoPane.getResetButton().setDisable(false);
 		diePane.farkle(msg, this);
 	}
-	
+
 	public void pass() {
+		if (isAIturn()) {
+			System.out.println("AI: TURN SCORE = " + game.getPlayer_2().getTurnScore());
+			System.out.println("AI: END TURN\n");
+			infoPane.getResetButton().setDisable(false);
+		}
 		// Active Player passes turn
 		if (game.endOfRound()) {
 			TurnInfo temp = data.get(data.size() - 1);
 			data.remove(data.size() - 1);
-			temp.setP2(
-					Integer.toString(game.getActive_player().getScore() + game.getActive_player().getTurnScore()));
+			temp.setP2(Integer.toString(game.getActive_player().getScore() + game.getActive_player().getTurnScore()));
 			data.add(new TurnInfo(temp.getTurnNumber(), temp.getP1(), temp.getP2()));
 		} else {
 			data.add(new TurnInfo(Integer.toString(game.getTurn_count()),
-					Integer.toString(game.getActive_player().getScore() + game.getActive_player().getTurnScore()),
-					""));
+					Integer.toString(game.getActive_player().getScore() + game.getActive_player().getTurnScore()), ""));
 		}
 		game.passTurn(false);
 		if (isAIturn()) {
@@ -218,7 +233,7 @@ public class ClientDriver extends Application implements EventHandler<ActionEven
 			infoPane.updateInfo(game);
 		}
 	}
-	
+
 	/**
 	 * Game over screen.
 	 */
@@ -241,35 +256,70 @@ public class ClientDriver extends Application implements EventHandler<ActionEven
 		root.setLeft(null);
 		root.setCenter(gameOverBox);
 	}
-	
+
 	public boolean isAIturn() {
 		return game.getActive_player() == game.getPlayer_2();
 	}
-	
-	
+
 	public void AIturn() {
-		System.out.println("\n");
-		System.out.println("AI Turn: " + game.getTurn_count());
-		System.out.println("Active Player: " + game.getActive_player().getName());
-		do {
+		infoPane.getResetButton().setDisable(true);
+		System.out.println("AI TURN #" + game.getTurn_count());
+		AIturnR();
+	}
+
+	private int aiRolls = 0;
+
+	private void AIturnR() {
+		if (!game.gameOver() && ai.rollAgain(game)) {
 			game.rollDice();
-			System.out.println("Roll Again");
-			if(game.detectFarkle()) {
-				System.out.println("Ah shoot I Farkled!");
+			aiRolls++;
+			System.out.println("AI: ROLL #" + aiRolls);
+			diePane.clearSelection();
+			// System.out.println("Roll Again");
+			if (game.detectFarkle()) {
+				System.out.println("AI: FARKLE\nAI: END TURN\n");
+				aiRolls = 0;
 				farkle();
 				return;
 			} else {
 				boolean[] selection = ai.makeSelection(game);
-				for(boolean b: selection){
-					System.out.println(b);
-				}
-				game.setSelection(selection);
-				System.out.println("Value of Selection: " + game.checkSelectionScore());
-				game.scoreSelection();
-				System.out.println("AI score: " + game.getPlayer_2().getTurnScore());
+				game.setSelection(selection.clone());
+				diePane.setSelection(selection.clone());
+				System.out.println("AI: SELECTION SCORE = " + game.checkSelectionScore());
+				refresh();
+
+				PauseTransition pause = new PauseTransition(Duration.seconds(3));
+				pause.setOnFinished(e -> {
+					game.scoreSelection();
+					diePane.clearSelection();
+					refresh();
+					AIturnR();
+				});
+				pause.play();
 			}
-		} while(!game.getActive_player().canPass()||ai.rollAgain(game));
-		System.out.println("AI. I decided to be done.");
-		pass();
+		} else {
+			System.out.println("AI: MOVE TO PASS TURN");
+			boolean[] finalSelection = ai.selectAllUnselectedDie(game);
+			game.setSelection(finalSelection.clone());
+			diePane.setSelection(finalSelection.clone());
+			int finalValue = game.checkSelectionScore();
+			refresh();
+			if (finalValue > 0) {
+				PauseTransition pause = new PauseTransition(Duration.seconds(3));
+				System.out.println("AI: FINAL SELECTION SCORE = " + finalValue);
+				pause.setOnFinished(e -> {
+					game.scoreSelection();
+					diePane.clearSelection();
+					refresh();
+					aiRolls = 0;
+					pass();
+				});
+				pause.play();
+			} else {
+				aiRolls = 0;
+				pass();
+			}
+
+		}
 	}
 }

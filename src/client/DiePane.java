@@ -84,6 +84,15 @@ public class DiePane extends VBox{
 	}
 	
 	/**
+	 * Sets the selection.
+	 *
+	 * @return the selection
+	 */
+	public void setSelection(boolean[] selection) {
+		this.selection = selection;
+	}
+	
+	/**
 	 * Gets the pass btn.
 	 *
 	 * @return the pass btn

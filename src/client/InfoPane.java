@@ -1,6 +1,9 @@
 package client;
 
 import game.Farkle;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 
@@ -24,13 +27,23 @@ public class InfoPane extends VBox {
 	/** The cur selection score lbl. */
 	private Label curSelectionScoreLbl;
 
+	private Button resetButton;
+	
+	public Button getResetButton() {
+		return resetButton;
+	}
+	
 	/**
 	 * Instantiates a new info pane.
 	 *
 	 * @param game the game
 	 */
-	public InfoPane(Farkle game) {
+	public InfoPane(Farkle game, EventHandler<ActionEvent> handler) {
 		this.getStyleClass().add("pane");
+		
+		resetButton = new Button("Reset");
+		resetButton.setOnAction(handler);
+		
 		updateInfo(game);
 	}
 	
@@ -60,7 +73,9 @@ public class InfoPane extends VBox {
 		}
 		curSelectionScoreLbl.setId("info-lbl");
 		
-		this.getChildren().addAll(activePlayerLbl, activePlayerScoreLbl, activePlayerNumFarklesLbl, activePlayerTurnScoreLbl,
+		this.getChildren().addAll(resetButton, activePlayerLbl, activePlayerScoreLbl, activePlayerNumFarklesLbl, activePlayerTurnScoreLbl,
 				curSelectionScoreLbl);
+		
+		
 	}
 }

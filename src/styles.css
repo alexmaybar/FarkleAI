@@ -23,25 +23,25 @@
 }
 
 .button:pressed {
-  -fx-background-color: #003300;
+  -fx-background-color: #5e0516;
 }
 
 #info-lbl {
-  -fx-padding: 2px;
+  -fx-padding: 3;
   -fx-font-size: 14px;
   -fx-font-weight: bold;
   -fx-effect: dropshadow( gaussian , rgba(255,255,255,0.5) , 0,0,0,1 );
 }
 
 #big-info-lbl {
-  -fx-padding: 2px;
+  -fx-padding: 10;
   -fx-font-size: 20px;
   -fx-font-weight: bold;
   -fx-effect: dropshadow( gaussian , rgba(255,255,255,0.5) , 0,0,0,1 );
 }
 
 #img {
-  -fx-effect: dropshadow(three-pass-box, rgba(0, 64, 255,.8), 15, 0, 0, 0);
+  -fx-effect: dropshadow(three-pass-box, rgba(198, 3, 41,.9), 15, 0, 0, 0);
 }
 
 #table {

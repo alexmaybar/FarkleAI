@@ -16,9 +16,6 @@ public class TitleScreen extends VBox{
 	/** The title lbl. */
 	private Label titleLbl;
 	
-	/** The options box. */
-	private HBox optionsBox;
-	
 	/** The start btn. */
 	private Button startBtn;
 	
@@ -43,14 +40,10 @@ public class TitleScreen extends VBox{
 		titleLbl = new Label("FARKLE");	
 		titleLbl.setId("title");
 		
-		optionsBox = new HBox();
-		optionsBox.setAlignment(Pos.CENTER);
-		optionsBox.getChildren().add(new Label("Options here"));
-		
 		startBtn = new Button("Start Game");
 		startBtn.setOnAction(handler);
 		
-		this.getChildren().addAll(titleLbl, optionsBox, startBtn);
+		this.getChildren().addAll(titleLbl, startBtn);
 	}
 
 }
